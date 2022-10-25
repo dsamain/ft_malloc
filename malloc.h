@@ -12,8 +12,21 @@
 enum e_zone_type {
     TINY,
     SMALL,
-    LARGE
+    LARGE,
 };
+
+
+
+#define DEBUG 1
+
+#define dbg(s, ...) {fprintf(stderr, "debug: "); fprintf(stderr, s, ##__VA_ARGS__);}
+
+
+//#ifdef DEBUG 
+    //#define dbg printf;
+//#else
+    //#define dbg 
+//#endif
 
 typedef struct s_zone {
     struct s_zone *next;
@@ -33,5 +46,5 @@ typedef struct s_block {
 
 
 void free(void *ptr);
-void *malloc(size_t size);
+void *ft_malloc(size_t size);
 void *realloc(void *ptr, size_t size);

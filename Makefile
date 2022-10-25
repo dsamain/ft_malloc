@@ -1,5 +1,5 @@
 
-SRCS = $(addprefix src/, malloc.c)
+SRCS = src/malloc.c src/free.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -25,13 +25,15 @@ $(NAME): $(OBJS)
 all:		$(NAME)
 
 test: all
-	$(CC) -o test test.c -L $(NAME) -fsanitize=address
+	export LD_LIBRARY_PATH=$(PWD):$(LD_LIBRARY_PATH)
+	$(CC) -L$(PWD)/$(NAME) test.c $(NAME) -o test
 
 clean:
 	rm -f $(OBJS)
 
 fclean:		clean
 	rm -f $(NAME) libft_malloc.so
+	rm -f test
 
 re:			fclean all
 
