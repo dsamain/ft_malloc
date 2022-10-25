@@ -14,7 +14,11 @@ enum e_zone_type get_zone_type(size_t size) {
 }
 
 t_zone *create_zone(size_t size, enum e_zone_type type) {
+    if (type == LARGE) {
+        size += size % getpagesize();
+    }
     t_zone *ret = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+
 
     if (ret == MAP_FAILED) {
         return NULL;
@@ -55,7 +59,17 @@ char *new_block(size_t block_size) {
     }
 
     if (!zone) {
-        zone = create_zone(type == TINY ? TINY_ZONE_SIZE : SMALL_ZONE_SIZE, type);
+        switch (type) {
+            case TINY:
+                zone = create_zone(TINY_ZONE_SIZE, TINY);
+                break;
+            case SMALL:
+                zone = create_zone(SMALL_ZONE_SIZE, SMALL);
+                break;
+            case LARGE:
+                zone = create_zone(block_size + sizeof(t_zone), LARGE);
+                break;
+        }
         if (!zone) {
             return NULL;
         }
@@ -65,6 +79,7 @@ char *new_block(size_t block_size) {
     t_block *ret;
     ret = (t_block *)(((char *)zone) + sizeof(t_zone));
     if (zone->block_count) {
+        printf("zone->block_count = %d\n", zone->block_count);
         while (ret->next) {
             ret = ret->next;
         }
@@ -82,6 +97,7 @@ char *new_block(size_t block_size) {
     zone->free_size -= block_size;
     zone->block_count++;
 
+    printf("ret->next : %p\n", ret->next);
     
     return (char *)ret;
 }
@@ -95,9 +111,12 @@ t_block *get_block(size_t block_size) {
             int cnt = zone->block_count;
             t_block *cur = (t_block *)((char *)zone + sizeof(t_zone));
             while (cnt--) {
+                //dbg("cur block %p \n", cur);
                 if (cur->size >= block_size && cur->is_free) {
                     dbg("reuse of block: %p zone: %p(%s) size: %d offset: %d\n", cur,  zone, zone->type == TINY ? "TINY" : "SMALL", block_size, (char *)cur - (char *)zone);
+                    printf("cur->next : %p\n", cur->next);
                     cur->is_free = 0;
+                    //cur->size = block_size;
                     return cur;
                 }
                 cur = cur->next;

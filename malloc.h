@@ -17,9 +17,13 @@ enum e_zone_type {
 
 
 
-#define DEBUG 1
+#define DEBUG
 
-#define dbg(s, ...) {fprintf(stderr, "debug: "); fprintf(stderr, s, ##__VA_ARGS__);}
+#ifdef DEBUG
+    #define dbg(s, ...) {fprintf(stderr, "debug: "); fprintf(stderr, s, ##__VA_ARGS__);}
+#else
+    #define dbg(s, ...)
+#endif
 
 
 //#ifdef DEBUG 
