@@ -1,6 +1,15 @@
-#include "malloc.h"
-#include <stdlib.h>
+
 #include <time.h>
+#include <string.h>
+
+#ifdef STD
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <stdio.h>
+    #include <sys/mman.h>
+#else
+    #include "malloc.h"
+#endif
 
 enum test {
     pouet = 42,
@@ -9,51 +18,30 @@ enum test {
 int main() {
 
 
-    //char *p= malloc(144497);
-    //int i = 0;
-    //while (1) {
-        //p[i] = 'a';
-        //printf("%d\n", i);
-        //i += 1024;
+    void *ptr = calloc(123, 2);
+    for (int i= 0 ; i < 42 && ptr; i++) {
+        printf("%d", ((char *)ptr)[i]);
+    }
+    show_alloc_mem();
+
+    //clock_t start = clock();
+    //{
+        //int n = 10, m = 42;
+        //for (int i = 0; i < n; i++) {
+            //int sz = rand() % m + 1, tmp;
+            //char *ptr = (char *)malloc(sz);
+            //if (rand()% 3) {
+                //sz = sz + ((tmp = (rand() % m)) - tmp / 2) / 3;
+                ////printf("sz : %d\n", sz);
+                //ptr = realloc(ptr, sz);
+            //}
+            //printf("malloc ret : %p\n", ptr);
+            //for (int j = 0; j < sz; j++) {
+                //ptr[j] = 'a';
+            //}
+            //if (rand() % 2) {
+                //free(ptr);
+            //}
+        //}
     //}
-
-    //char *p = ft_malloc(131071);
-
-    //return 0;
-
-
-    clock_t start = clock();
-    {
-        int n = 10, m = 100;
-        for (int i = 0; i < n; i++) {
-            char *ptr = (char *)ft_malloc(rand () % m);
-            //printf("malloc ret : %p\n", ptr);
-            for (int j = 0; j <= m; j++) {
-                ptr[j] = 'a';
-            }
-            if (rand() % 2) {
-                free(ptr);
-            }
-            //printf("i: %d\n", i);
-        }
-        //char *ptr = (char *)ft_malloc(m * 2);
-    }
-    return 0;
-    printf("ft time: %f\n", (double)(clock() - start) / CLOCKS_PER_SEC);
-    start = clock();
-    {
-        int n = 100000, m = 100;
-        for (int i = 0; i < n; i++) {
-            char *ptr = (char *)ft_malloc(m);
-            //printf("malloc ret : %p\n", ptr);
-            for (int j = 0; j < m; j++) {
-                ptr[j] = 'a';
-            }
-            if (rand() % 2) {
-                free(ptr);
-            }
-        }
-        char *ptr = (char *)ft_malloc(m * 2);
-    }
-    printf("std time: %f\n", (double)(clock() - start) / CLOCKS_PER_SEC);
 }
